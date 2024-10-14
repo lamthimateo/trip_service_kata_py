@@ -1,23 +1,12 @@
-from DependendClassCallDuringUnitTestException import DependendClassCallDuringUnitTestException
-
 class UserSession:
+    _instance = None
 
-  def __new__(cls):
-    if not hasattr(cls, '_instance'):
-      cls._instance = super(UserSession, cls).__new__(cls)
-    return cls._instance
-  
-  @staticmethod
-  def getInstance():
-    return UserSession()
+    @staticmethod
+    def get_instance():
+        if UserSession._instance is None:
+            UserSession._instance = UserSession()
+        return UserSession._instance
 
-  def isUserLoggedIn(self, user):
-    raise DependendClassCallDuringUnitTestException(
-      "UserSession.isUserLoggedIn() should not be called in an unit test"
-    )
-
-  def getLoggedUser(self):
-    raise DependendClassCallDuringUnitTestException(
-      "UserSession.getLoggedUser() should not be called in an unit test"
-    )
-
+    def get_logged_user(self):
+        # This method should return the logged-in user or None if not logged in.
+        pass

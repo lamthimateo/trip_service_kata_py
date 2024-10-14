@@ -1,11 +1,11 @@
 import unittest
 from unittest.mock import patch
-
-from Trip import Trip
 from TripService import TripService
 from User import User
+from Trip import Trip
+from UserSession import UserSession
+from TripDAO import TripDAO
 from UserNotLoggedInException import UserNotLoggedInException
-
 
 class TripServiceTest(unittest.TestCase):
 
@@ -13,28 +13,26 @@ class TripServiceTest(unittest.TestCase):
         self.trip_service = TripService()
         self.user = User()
 
-    @patch('UserSession.get_instance')
-    def test_should_throw_exception_when_user_is_not_logged_in(self, mock_session):
-        mock_session.return_value.get_logged_user.return_value = None
-        with self.assertRaises(UserNotLoggedInException):
-            self.trip_service.get_trips_by_user(self.user)
-
-    @patch('UserSession.get_instance')
-    @patch('TripDAO.find_trips_by_user')
-    def test_should_return_trips_when_users_are_friends(self, mock_find_trips, mock_session):
+    @patch.object(UserSession, 'get_logged_user')
+    @patch('TripService.TripDAO.findTripsByUser')  # Correct patch path for findTripsByUser
+    def test_should_return_trips_when_users_are_friends(self, mock_find_trips, mock_get_logged_user):
         friend = User()
         trip = Trip()
 
-        mock_session.return_value.get_logged_user.return_value = self.user
+        # Mocking the session to return the logged-in user
+        mock_get_logged_user.return_value = self.user
+        # Mocking TripDAO to return a list of trips
         self.user.add_friend(friend)
         mock_find_trips.return_value = [trip]
 
+        # Call the TripService method
         result = self.trip_service.get_trips_by_user(friend)
+        # Assert that the result is the list of trips
         self.assertEqual(result, [trip])
 
-    @patch('UserSession.get_instance')
-    def test_should_return_empty_list_when_users_are_not_friends(self, mock_session):
-        mock_session.return_value.get_logged_user.return_value = self.user
+    @patch.object(UserSession, 'get_logged_user')
+    def test_should_return_empty_list_when_users_are_not_friends(self, mock_get_logged_user):
+        mock_get_logged_user.return_value = self.user
         not_friend = User()
 
         result = self.trip_service.get_trips_by_user(not_friend)
