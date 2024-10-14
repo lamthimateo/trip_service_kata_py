@@ -14,18 +14,18 @@ class TripServiceTest(unittest.TestCase):
         self.user = User()
 
     @patch.object(UserSession, 'get_logged_user')
-    @patch('TripService.TripDAO.findTripsByUser')  # Correct patch path for findTripsByUser
+    @patch('TripService.TripDAO.find_trips_by_user')  # Updated method name to snake_case
     def test_should_return_trips_when_users_are_friends(self, mock_find_trips, mock_get_logged_user):
         friend = User()
         trip = Trip()
 
-        # Mocking the session to return the logged-in user
+        # Mock the session to return the logged-in user
         mock_get_logged_user.return_value = self.user
-        # Mocking TripDAO to return a list of trips
+        # Mock the TripDAO to return a list of trips
         self.user.add_friend(friend)
         mock_find_trips.return_value = [trip]
 
-        # Call the TripService method
+        # Now call the TripService method
         result = self.trip_service.get_trips_by_user(friend)
         # Assert that the result is the list of trips
         self.assertEqual(result, [trip])
