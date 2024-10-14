@@ -1,11 +1,10 @@
 import unittest
 from unittest.mock import patch
+
+from Trip import Trip
 from TripService import TripService
 from User import User
-from Trip import Trip
 from UserSession import UserSession
-from TripDAO import TripDAO
-from UserNotLoggedInException import UserNotLoggedInException
 
 
 class TripServiceTest(unittest.TestCase):
